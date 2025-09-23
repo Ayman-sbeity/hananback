@@ -67,9 +67,16 @@ app.use("/api/users", userRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
+app.use(express.static(path.join(__dirname, 'build')));
+
 
 app.get("/", (req, res) => {
   res.send("Backend is running 🚀");
+});
+
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 const PORT = process.env.PORT || 5002;
