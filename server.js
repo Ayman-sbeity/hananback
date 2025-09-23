@@ -32,7 +32,7 @@ if (process.env.NODE_ENV !== 'production') {
 app.use(compression());
 
 app.use(cors({
-  origin: ['http://localhost:5173','https://luabeirut.vercel.app', 'https://luabeirut.vercel.app/products', 'http://localhost:3000', 'http://localhost:8080'],
+  origin: ['http://localhost:5173','https://luabeirut.vercel.app', 'https://luabeirut.vercel.app/api/products', 'http://localhost:3000', 'http://localhost:8080'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
@@ -67,7 +67,6 @@ app.use("/api/users", userRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
-app.use(express.static(path.join(__dirname, 'build')));
 
 
 app.get("/", (req, res) => {
@@ -75,10 +74,10 @@ app.get("/", (req, res) => {
 });
 
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
-
+// app.use(express.static(path.join(__dirname, 'build')));
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'build', 'index.html'));
+// });
 const PORT = process.env.PORT || 5002;
 app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
