@@ -50,13 +50,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
 }));
 
 app.use((req, res, next) => {
-  if (req.path === '/api/products' && req.method === 'GET') {
-    res.set('Cache-Control', 'public, max-age=300');
-  }
-  else if (req.path.startsWith('/api/products/') && req.method === 'GET') {
-    res.set('Cache-Control', 'public, max-age=600');
-  }
-  else if (req.path.includes('/cart') || req.path.includes('/orders')) {
+  // Cache control disabled - no caching implemented
+  if (req.path.includes('/cart') || req.path.includes('/orders')) {
     res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
   }
   next();

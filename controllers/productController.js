@@ -1,10 +1,4 @@
 import Product from "../models/Product.js";
-import { 
-  cacheOperations, 
-  generateProductsKey, 
-  generateProductKey,
-  CACHE_KEYS 
-} from "../utils/cache.js";
 
 export const getProducts = async (req, res) => {
   try {
@@ -19,14 +13,6 @@ export const getProducts = async (req, res) => {
       maxPrice,
       sort
     } = req.query;
-
-    const cacheKey = generateProductsKey(req.query);
-
-    const cachedResult = cacheOperations.get(cacheKey);
-    if (cachedResult) {
-      console.log('Returning cached products data');
-      return res.json(cachedResult);
-    }
 
     console.log('Fetching products from database...');
     
@@ -76,9 +62,6 @@ export const getProducts = async (req, res) => {
       total
     };
 
-    cacheOperations.set(cacheKey, result, 300);
-    console.log('Products data cached successfully');
-
     res.json(result);
   } catch (err) {
     console.error('Error in getProducts:', err);
@@ -90,23 +73,12 @@ export const getProductById = async (req, res) => {
   try {
     const productId = req.params.id;
 
-    const cacheKey = generateProductKey(productId);
-
-    const cachedProduct = cacheOperations.get(cacheKey);
-    if (cachedProduct) {
-      console.log('Returning cached product data');
-      return res.json(cachedProduct);
-    }
-
     console.log('Fetching product from database...');
 
     const product = await Product.findById(productId).lean();
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
-
-    cacheOperations.set(cacheKey, product, 600);
-    console.log('Product data cached successfully');
 
     res.json(product);
   } catch (err) {
@@ -145,9 +117,6 @@ export const createProduct = async (req, res) => {
     
     const savedProduct = await product.save();
 
-    cacheOperations.clearProductCache();
-    console.log('Product cache cleared after creation');
-    
     res.status(201).json(savedProduct);
   } catch (err) {
     if (err.name === 'ValidationError') {
@@ -186,9 +155,6 @@ export const updateProduct = async (req, res) => {
 
     const updatedProduct = await product.save();
 
-    cacheOperations.clearProductCache();
-    console.log('Product cache cleared after update');
-    
     res.json(updatedProduct);
   } catch (err) {
     if (err.name === 'ValidationError') {
@@ -209,9 +175,6 @@ export const deleteProduct = async (req, res) => {
     product.isActive = false;
     await product.save();
 
-    cacheOperations.clearProductCache();
-    console.log('Product cache cleared after deletion');
-    
     res.json({ message: 'Product deleted successfully' });
   } catch (err) {
     console.error('Error in deleteProduct:', err);
